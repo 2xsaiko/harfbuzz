@@ -415,6 +415,7 @@ build_summary = {
      'libdir': get_option('libdir'),
      'includedir': get_option('includedir'),
      'datadir': get_option('datadir'),
+     'cmakepackagedir': get_option('cmakepackagedir') == '' ? get_option('libdir') / 'cmake' : get_option('cmakepackagedir')
     },
   'Unicode callbacks (you want at least one)':
     {'Builtin': true,
