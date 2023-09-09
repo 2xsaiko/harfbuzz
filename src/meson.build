@@ -794,23 +794,8 @@ have_gobject = conf.get('HAVE_GOBJECT', 0) == 1
 # This code (especially PACKAGE_INIT) kept similar to what CMake's own
 # configure_package_config_file() generates, see
 # https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html#command:configure_package_config_file
+
 cmake_config = configuration_data()
-
-# Equivalent to configure_package_config_file(INSTALL_DESTINATION ...) (see link
-# above).
-# In Nixpkgs, the Harfbuzz package is installed into two Nix store paths, "out"
-# and "dev", where "out" contains libraries only (i.e. lib/libharfbuzz.so) and
-# "dev" contains development files, i.e. include and lib/cmake. If a CMake file
-# is installed to "out", Nixpkgs will move it to "dev". Since we need to figure
-# out relative install paths here, we do need to know the final path of our
-# CMake files to calculate the correct relative paths.
-# Of course, this still defaults to $libdir/cmake if unset.
-cmake_package_install_dir = get_option('cmakepackagedir')
-
-if cmake_package_install_dir == ''
-  cmake_package_install_dir = get_option('libdir') / 'cmake'
-endif
-
 cmake_config_dir = cmake_package_install_dir / 'harfbuzz'
 
 cmake_package_prefix_dir = fs.relative_to(get_option('prefix'), get_option('prefix') / cmake_config_dir)
