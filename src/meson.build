@@ -798,7 +798,13 @@ have_gobject = conf.get('HAVE_GOBJECT', 0) == 1
 cmake_config = configuration_data()
 cmake_config_dir = cmake_package_install_dir / 'harfbuzz'
 
-cmake_package_prefix_dir = fs.relative_to(get_option('prefix'), get_option('prefix') / cmake_config_dir)
+# TODO: Replace these with
+# fs.relative_to(get_option('prefix') / cmake_config_dir, get_option('prefix'))
+# etc. once implemented
+# See https://github.com/mesonbuild/meson/pull/12087
+relative_to = find_program('relative_to.py')
+
+cmake_package_prefix_dir = run_command(relative_to, get_option('prefix'), get_option('prefix') / cmake_config_dir, check: true).stdout().strip()
 cmake_package_prefix_dir = '${CMAKE_CURRENT_LIST_DIR}/@0@'.format(cmake_package_prefix_dir)
 
 # Make all the relevant paths relative to our prefix, so we can later append
@@ -807,13 +813,13 @@ cmake_package_prefix_dir = '${CMAKE_CURRENT_LIST_DIR}/@0@'.format(cmake_package_
 cmake_install_includedir = get_option('includedir')
 
 if fs.is_absolute(cmake_install_includedir)
-  cmake_install_includedir = fs.relative_to(cmake_install_includedir, get_option('prefix'))
+  cmake_install_includedir = run_command(relative_to, cmake_install_includedir, get_option('prefix'), check: true).stdout().strip()
 endif
 
 cmake_install_libdir = get_option('libdir')
 
 if fs.is_absolute(cmake_install_libdir)
-  cmake_install_libdir = fs.relative_to(cmake_install_libdir, get_option('prefix'))
+  cmake_install_libdir = run_command(relative_to, cmake_install_libdir, get_option('prefix'), check: true).stdout().strip()
 endif
 
 cmake_config.set('PACKAGE_INIT', '''
